@@ -16,87 +16,114 @@ require 'yaml'
 require 'aws-sdk'
 
 class EmailConfig
-
-
-attr_reader :from, :to, :subject, :body, :files
-
-
-
-def initialize
-config_file = File.join("./auth.yml")
-
-unless File.exist?(config_file)
-  puts <<END
+  
+  
+  attr_reader :from, :to, :cc, :subject, :body, :files
+  
+  
+  
+  def initialize
+    config_file = File.join("./auth.yml")
+    
+    unless File.exist?(config_file)
+      puts <<END
 To run the samples, put your credentials in auth.yml as follows:
 
 access_key_id: YOUR_ACCESS_KEY_ID
 secret_access_key: YOUR_SECRET_ACCESS_KEY
 
 END
-  exit 1
-end
-
-@config = YAML.load(File.read(config_file))
-
-unless @config.kind_of?(Hash)
-  puts <<END
+      exit 1
+    end
+    
+    @config = YAML.load(File.read(config_file))
+    
+    unless @config.kind_of?(Hash)
+      puts <<END
 auth.yml is formatted incorrectly.  Please use the following format:
 
 access_key_id: YOUR_ACCESS_KEY_ID
 secret_access_key: YOUR_SECRET_ACCESS_KEY
 
 END
-  exit 1
-end
-
-
-if (1..3).cover? ARGV.size
-
-  puts <<END
+      exit 1
+    end
+    
+    
+    if ARGV.size == 0
+      
+      puts <<END
 Specify either number of command line arguments:
-0: (use all defaults)
->=5: (specify all manually)
+MessageFilename [AttachmentFilename ...]
 END
-  exit 1
-end
+      exit 1
+    end
+    
+    
+    
+    @from, @to, @cc, @subject, @body  = parseMessageFile ARGV[0] 
+    ARGV.shift
+    
+    @files = ARGV[0,ARGV.size]
+    
+    
+    
+    
+  end #end the init method
+  
+  
+  def parseMessageFile(filename) 
+    
+    mFile = File.open(filename)
 
+    def mFile.nextContentLine
+      line = nil
+      loop do
+        line = self.readline.chomp
+        break unless line[0] == '#'
+      end
 
-
-if ARGV.size > 0
-@from = ARGV[0]
-ARGV.shift
-
-@to = ARGV[0]
-ARGV.shift
-
-@subject = ARGV[0]
-ARGV.shift
-
-@body = ARGV[0]
-ARGV.shift
-
-@files = ARGV[0,ARGV.size]
-
-
-else
-@from = 'NRRCProjectNotifications@gmail.com'
-@to = from
-@subject = 'NRRC Automated Notification'
-@body = 'This is an automated notification about the NRRC.'
-@files = Array.new
-
-
-end
-
-
-end #end the init method
-
-
-
-def config
- @config
-end
-
-
-#AWS.config(config) - will configure individually
+      line
+    end
+    
+    #from = mFile.readline.chomp
+    from = mFile.nextContentLine
+    
+    #to = mFile.readline.chomp
+    to = mFile.nextContentLine
+    
+    #cc = mFile.readline.chomp
+    cc = mFile.nextContentLine
+    cc = cc == '' ? nil : cc
+    
+    #subject = mFile.readline.chomp
+    subject = mFile.nextContentLine
+    
+    
+    body = ''
+    
+    mFile.each_line do |l|
+      body << l
+      
+      
+      
+      
+    end
+    
+    
+    [from, to, cc, subject, body]
+    
+    
+    
+    
+  end
+  
+  
+  
+  def config
+    @config
+  end
+  
+  
+  #AWS.config(config) - will configure individually
 end
