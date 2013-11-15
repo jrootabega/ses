@@ -13,7 +13,14 @@ def prepareMessage(c)
   end
 end
 
-config = EmailConfig.new
+authfile = ARGV[0]
+ARGV.shift
+
+if authfile == 'nil'
+  authfile = nil
+end
+
+config = EmailConfig.new authfile
 
 
 

@@ -22,8 +22,8 @@ class EmailConfig
   
   
   
-  def initialize
-    config_file = File.join("./auth.yml")
+  def initialize(authfile = nil)
+    config_file = File.join(authfile.nil? ? "./auth.yml" : authfile)
     
     unless File.exist?(config_file)
       puts <<END
