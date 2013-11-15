@@ -1,0 +1,11 @@
+#WARNING - all uncommented lines are strictly counted from top of file. Do not add blank lines unless deliberately skipping that field
+#From:
+NRRCProjectNotifications@gmail.com
+#To:
+NRRCProjectNotifications@gmail.com
+#CC(use blank line if none)
+NRRCProjectNotifications+CC@gmail.com
+#subject
+This is the subject line.
+This is body line 1.
+This is body line 2.
